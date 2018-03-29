@@ -1,0 +1,10 @@
+language: csharp
+os:
+- linux
+mono: latest
+dotnet: 2.0.0
+dist: xenial
+install:
+- sudo apt install libgcc1
+script:
+- "./build.sh"
