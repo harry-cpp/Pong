@@ -15,7 +15,7 @@ namespace Pong
     {
         public static World MainWorld;
 
-        private RenderTarget2D _renderTarget;
+        private RenderTarget2D _renderTargetGame, _renderTargetUi;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private List<GameObject> _objects;
@@ -49,7 +49,8 @@ namespace Pong
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _renderTarget = new RenderTarget2D(GraphicsDevice, GameSettings.Width, GameSettings.Height);
+            _renderTargetUi = new RenderTarget2D(GraphicsDevice, GameSettings.Width, GameSettings.Height);
+            _renderTargetGame = new RenderTarget2D(GraphicsDevice, GameSettings.Width, GameSettings.Height);
             GameContent.Load(Content, GraphicsDevice);
 
             _objects.Add(new Paddle(new Vector2(50, GameSettings.Height / 2f), Keys.S, Keys.W));
@@ -104,6 +105,8 @@ namespace Pong
             {
                 _graphics.IsFullScreen = !_graphics.IsFullScreen;
                 _graphics.ApplyChanges();
+
+                IsMouseVisible = !_graphics.IsFullScreen;
             }
 
             if (InputManager.IsKeyPressed(Keys.Space) || 
@@ -152,13 +155,25 @@ namespace Pong
 
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.SetRenderTarget(_renderTarget);
-            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            _graphics.GraphicsDevice.SetRenderTarget(_renderTargetGame);
+            _graphics.GraphicsDevice.Clear(Color.Transparent);
 
             _spriteBatch.Begin();
 
             foreach (var obj in _objects)
-                obj.Draw(gameTime, _spriteBatch);
+                if (!obj.IsUILayer)
+                    obj.Draw(gameTime, _spriteBatch);
+
+            _spriteBatch.End();
+
+            _graphics.GraphicsDevice.SetRenderTarget(_renderTargetUi);
+            _graphics.GraphicsDevice.Clear(Color.Transparent);
+
+            _spriteBatch.Begin();
+
+            foreach (var obj in _objects)
+                if (obj.IsUILayer)
+                    obj.Draw(gameTime, _spriteBatch);
             
             if (_mode == Mode.Start)
                 _spriteBatch.DrawString(GameContent.Font.Default, _textStart, _positionStart, Color.White);
@@ -168,9 +183,14 @@ namespace Pong
             _spriteBatch.End();
 
             _graphics.GraphicsDevice.SetRenderTarget(null);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_renderTargetGame, GraphicsDevice.PresentationParameters.Bounds, Color.White);
+            _spriteBatch.End();
+
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _spriteBatch.Draw(_renderTarget, GraphicsDevice.PresentationParameters.Bounds, Color.White);
+            _spriteBatch.Draw(_renderTargetUi, GraphicsDevice.PresentationParameters.Bounds, Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);

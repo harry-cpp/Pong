@@ -5,6 +5,8 @@ namespace Pong
 {
     public class GameObject
     {
+        public bool IsUILayer;
+
         public virtual void ResetPosition()
         {
 

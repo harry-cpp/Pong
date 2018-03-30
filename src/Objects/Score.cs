@@ -11,6 +11,7 @@ namespace Pong
 
         public Score()
         {
+            IsUILayer = true;
             Left = 0;
             Right = 0;
             Scored = true;
