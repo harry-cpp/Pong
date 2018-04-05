@@ -5,12 +5,31 @@
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "default").ToLower();
+var solution = "";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
+Task("init")
+    .Does(() =>
+{
+    switch (Context.Environment.Platform.Family)
+    {
+        case PlatformFamily.Linux:
+            solution = "src/Pong.Linux.sln";
+            break;
+        case PlatformFamily.OSX:
+            solution = "src/Pong.MacOS.sln";
+            break;
+        default:
+            solution = "src/Pong.Windows.sln";
+            break;
+    }
+});
+
 Task("clean")
+    .IsDependentOn("init")
     .Does(() =>
 {
     if (DirectoryExists("bin"))
@@ -26,7 +45,7 @@ Task("prepare")
     .IsDependentOn("clean")
     .Does(() =>
 {
-    DotNetCoreRestore("Pong.sln");
+    DotNetCoreRestore(solution);
 });
 
 Task("build")
@@ -34,7 +53,7 @@ Task("build")
     .Does(() =>
 {
     System.Environment.SetEnvironmentVariable("MONO_LOG_LEVEL", "debug");
-    DotNetCoreBuild("Pong.sln", new DotNetCoreBuildSettings {
+    DotNetCoreBuild(solution, new DotNetCoreBuildSettings {
         Verbosity = DotNetCoreVerbosity.Minimal,
         Configuration = "Release"
     });
@@ -45,18 +64,23 @@ Task("publish")
     .Does(() =>
 {
     var rids = new string[0];
-    var platform = Context.Environment.Platform.Family;
 
-    if (platform == PlatformFamily.Linux)
-        rids = new[] { "linux-x64" };
-    else if (platform == PlatformFamily.OSX)
-        rids = new[] { "osx-x64" };
-    else
-        rids = new[] { "win-x86", "win-x64" };
+    switch (Context.Environment.Platform.Family)
+    {
+        case PlatformFamily.Linux:
+            rids = new[] { "linux-x64" };
+            break;
+        case PlatformFamily.OSX:
+            rids = new[] { "osx-x64" };
+            break;
+        default:
+            rids = new[] { "win-x86", "win-x64" };
+            break;
+    }
 
     foreach (var rid in rids)
     {
-        DotNetCorePublish("Pong.sln", new DotNetCorePublishSettings {
+        DotNetCorePublish(solution, new DotNetCorePublishSettings {
             Verbosity = DotNetCoreVerbosity.Minimal,
             Configuration = "Release",
             Runtime = rid

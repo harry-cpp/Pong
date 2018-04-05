@@ -4,16 +4,25 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>Pong</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\bin\Debug</OutputPath>
+    <OutputPath>..\..\bin\Debug\Linux</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\bin\Release</OutputPath>
+    <OutputPath>..\..\bin\Release\Linux</OutputPath>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <MonoGameContentReference Include="**\*.mgcb" />
+
+    <!-- "Include shared project" -->
+    <MonoGameContentReference Include="..\Pong\**\*.mgcb">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </MonoGameContentReference>
+    <Compile Include="..\Pong\**\*.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

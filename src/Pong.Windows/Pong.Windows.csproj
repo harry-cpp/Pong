@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>Pong</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\bin\Debug\Windows</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\bin\Release\Windows</OutputPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <MonoGameContentReference Include="**\*.mgcb" />
+
+    <!-- "Include shared project" -->
+    <MonoGameContentReference Include="..\Pong\**\*.mgcb">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </MonoGameContentReference>
+    <Compile Include="..\Pong\**\*.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FarseerPhysics.Portable" Version="3.5.1" />
+    <PackageReference Include="ILLink.Tasks" Version="0.1.5-preview-1461378" />
+    <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Icon.bmp" />
+  </ItemGroup>
+
+</Project>
